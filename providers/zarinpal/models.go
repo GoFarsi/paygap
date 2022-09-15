@@ -1,42 +1,88 @@
 package zarinpal
 
-// providerCodeMessages zarinpal code message list
-var providerCodeMessages = map[int]string{
-	100: "عملیات موفق",
-	101: "تراکنش وریفای شده",
-	-9:  "خطای اعتبار سنجی",
-	-10: "ای پی و يا مرچنت كد پذيرنده صحيح نيست",
-	-11: "مرچنت کد فعال نیست لطفا با تیم پشتیبانی ما تماس بگیرید",
-	-12: "تلاش بیش از حد در یک بازه زمانی کوتاه",
-	-15: "ترمینال شما به حالت تعلیق در آمده با تیم پشتیبانی تماس بگیرید",
-	-16: "سطح تاييد پذيرنده پايين تر از سطح نقره اي است",
-	-30: "اجازه دسترسی به تسویه اشتراکی شناور ندارید",
-	-32: "Wages is not valid, Total wages(floating) has been overload max amount",
-	-33: "درصد های وارد شده درست نیست",
-	-34: "مبلغ از کل تراکنش بیشتر است",
-	-35: "تعداد افراد دریافت کننده تسهیم بیش از حد مجاز است",
-	-40: "Invalid extra params, expire_in is not valid",
-	-50: "مبلغ پرداخت شده با مقدار مبلغ در وریفای متفاوت است",
-	-52: "خطای غیر منتظره با پشتیبانی تماس بگیرید",
-	-53: "اتوریتی برای این مرچنت کد نیست",
-	-54: "اتوریتی نامعتبر است",
-}
+import "github.com/Ja7ad/pgp/client"
 
 type Zarinpal struct {
-	merchantID string
-	sandbox    bool
+	client     *client.Client
+	merchantID string `validate:"required"`
+
+	requestEndpoint    string
+	verifyEndpoint     string
+	unverifiedEndpoint string
 }
 
-type request struct {
-	MerchantID  string `json:"merchant_id"`
+type paymentRequest struct {
+	MerchantID  string                 `json:"merchant_id" validate:"required"`
+	Amount      int                    `json:"amount" validate:"gt=5000"`
+	Currency    string                 `json:"currency"`
+	CallBackURL string                 `json:"callback_url" validate:"url"`
+	Description string                 `json:"description"`
+	MetaData    map[string]interface{} `json:"metadata"`
+}
+
+type verifyRequest struct {
+	MerchantID string `json:"merchant_id" validate:"required"`
+	Amount     int    `json:"amount" validate:"gt=0"`
+	Authority  string `json:"authority"`
+}
+
+type unverifiedTransactionsRequest struct {
+	MerchantID string `json:"merchant_id" validate:"required"`
+}
+
+type floatingShareSettlementRequest struct {
+	MerchantID  string                 `json:"merchant_id" validate:"required"`
+	Amount      int                    `json:"amount" validate:"gt=5000"`
+	CallBackURL string                 `json:"callback_url" validate:"url"`
+	Description string                 `json:"description"`
+	Wages       []*Wages               `json:"wages"`
+	MetaData    map[string]interface{} `json:"metadata"`
+}
+
+type PaymentResponse struct {
+	Data   *Data    `json:"data"`
+	Errors []string `json:"errors"`
+}
+
+type VerifyResponse struct {
+	Data   *Data    `json:"data"`
+	Errors []string `json:"errors"`
+}
+
+type UnverifiedTransactionsResponse struct {
+	Data *Data `json:"data"`
+}
+
+type FloatingShareSettlementResponse struct {
+	Wages []*Wages `json:"wages"`
+}
+
+type VerifyFloatingShareSettlementResponse struct {
+	Data   *Data    `json:"data"`
+	Errors []string `json:"errors"`
+}
+
+type Data struct {
+	Code        int      `json:"code"`
+	Message     string   `json:"message"`
+	Authority   string   `json:"authority,omitempty"`
+	CardHash    string   `json:"card_hash,omitempty"`
+	CardPan     string   `json:"card_pan,omitempty"`
+	RefID       int      `json:"ref_id,omitempty"`
+	FeeType     string   `json:"fee_type,omitempty"`
+	Fee         int      `json:"fee,omitempty"`
+	Wages       []*Wages `json:"wages,omitempty"`
+	Authorities []struct {
+		Authority   string `json:"authority"`
+		Amount      int    `json:"amount"`
+		CallBackURL string `json:"callback_url"`
+		Referer     string `json:"referer"`
+		Date        string `json:"date"`
+	} `json:"authorities,omitempty"`
+}
+
+type Wages struct {
+	Iban        string `json:"iban"`
 	Amount      int    `json:"amount"`
-	CallBackURL string `json:"call_back_url"`
 	Description string `json:"description"`
-	Email       string `json:"email"`
-	Mobile      string `json:"mobile"`
-}
-
-type response struct {
-	Status    int    `json:"status"`
-	Authority string `json:"authority"`
 }
