@@ -1,4 +1,4 @@
-package errors
+package status
 
 import (
 	"errors"
@@ -8,16 +8,16 @@ import (
 	"net/http"
 )
 
-type Error struct {
+type Status struct {
 	ProviderStatusCode int
 	GrpcStatusCode     codes.Code
 	HttpStatusCode     int
 	Message            string
 }
 
-// New create new pgp error
-func New(providerStatusCode, httpStatusCode int, grpcCode codes.Code, message string, params ...interface{}) *Error {
-	return &Error{
+// New create new pgp status
+func New(providerStatusCode, httpStatusCode int, grpcCode codes.Code, message string, params ...interface{}) *Status {
+	return &Status{
 		ProviderStatusCode: providerStatusCode,
 		HttpStatusCode:     httpStatusCode,
 		GrpcStatusCode:     grpcCode,
@@ -25,17 +25,17 @@ func New(providerStatusCode, httpStatusCode int, grpcCode codes.Code, message st
 	}
 }
 
-// Error return type error
-func (e *Error) Error() error {
+// Status return type status
+func (e *Status) Error() error {
 	return errors.New(e.Message)
 }
 
-// GrpcStatusError create grpc error
-func (e *Error) GrpcStatusError() *status.Status {
+// GrpcStatusError create grpc status
+func (e *Status) GrpcStatusError() *status.Status {
 	return status.New(e.GrpcStatusCode, e.Message)
 }
 
-// HttpError create http error
-func (e *Error) HttpError(w http.ResponseWriter) {
+// HttpError create http status
+func (e *Status) HttpError(w http.ResponseWriter) {
 	http.Error(w, e.Message, e.HttpStatusCode)
 }
