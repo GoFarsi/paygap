@@ -3,7 +3,7 @@ package zarinpal
 import (
 	"context"
 	"github.com/Ja7ad/pgp/client"
-	"github.com/Ja7ad/pgp/errors"
+	"github.com/Ja7ad/pgp/status"
 	"google.golang.org/grpc/codes"
 	"net/http"
 )
@@ -17,20 +17,20 @@ const (
 	ZARINPAL_VERIFY_SANDBOX_API_ENDPOINT  = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json"
 )
 
-var _ FactoryRequest = (*Zarinpal)(nil)
+var _ Interface = (*Zarinpal)(nil)
 
-type FactoryRequest interface {
-	RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, *errors.Error)
-	VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, *errors.Error)
-	UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, *errors.Error)
-	FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, *errors.Error)
-	VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, *errors.Error)
+type Interface interface {
+	RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, *status.Status)
+	VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, *status.Status)
+	UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, *status.Status)
+	FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, *status.Status)
+	VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, *status.Status)
 }
 
 // New create zarinpal provider object for user factory request methods
-func New(client *client.Client, merchantID string, sandbox bool) (FactoryRequest, *errors.Error) {
+func New(client *client.Client, merchantID string, sandbox bool) (Interface, *status.Status) {
 	if client == nil {
-		return nil, errors.New(0, http.StatusInternalServerError, codes.Internal, "client is nil")
+		return nil, status.ERR_CLIENT_IS_NIL
 	}
 
 	client.GetMutex().Lock()
@@ -50,15 +50,14 @@ func New(client *client.Client, merchantID string, sandbox bool) (FactoryRequest
 	}
 
 	if err := client.GetValidator().Struct(zarinpal); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	return zarinpal, nil
 }
 
 // RequestPayment create payment request and return status code and authority
-func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, *errors.Error) {
-	errCh := make(chan *errors.Error)
+func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, *status.Status) {
 	req := &paymentRequest{
 		MerchantID:  z.merchantID,
 		Amount:      amount,
@@ -69,24 +68,22 @@ func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, 
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	resp := &PaymentResponse{}
-	go z.client.Request(ctx, z.requestEndpoint, "POST", "", map[string]string{}, req, resp, errCh)
-
-	select {
-	case err := <-errCh:
-		close(errCh)
-		return resp, err
-	case <-ctx.Done():
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, ctx.Err().Error())
+	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	if s.HttpStatusCode == http.StatusInternalServerError {
+		return nil, s
 	}
+
+	s.ProviderStatusCode = resp.Data.Code
+
+	return resp, s
 }
 
 // VerifyPayment transaction by merchant id, amount and authority to payment provider
-func (z *Zarinpal) VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, *errors.Error) {
-	errCh := make(chan *errors.Error)
+func (z *Zarinpal) VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, *status.Status) {
 	req := &verifyRequest{
 		MerchantID: z.merchantID,
 		Amount:     amount,
@@ -94,48 +91,44 @@ func (z *Zarinpal) VerifyPayment(ctx context.Context, amount int, authority stri
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	resp := &VerifyResponse{}
-	go z.client.Request(ctx, z.requestEndpoint, "POST", "", map[string]string{}, req, resp, errCh)
-
-	select {
-	case err := <-errCh:
-		close(errCh)
-		return resp, err
-	case <-ctx.Done():
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, ctx.Err().Error())
+	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	if s.HttpStatusCode == http.StatusInternalServerError {
+		return nil, s
 	}
+
+	s.ProviderStatusCode = resp.Data.Code
+
+	return resp, s
 }
 
 // UnverifiedTransactions get unverified transactions from provider
-func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, *errors.Error) {
-	errCh := make(chan *errors.Error)
+func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, *status.Status) {
 	req := &unverifiedTransactionsRequest{
 		MerchantID: z.merchantID,
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	resp := &UnverifiedTransactionsResponse{}
-	go z.client.Request(ctx, z.requestEndpoint, "POST", "", map[string]string{}, req, resp, errCh)
-
-	select {
-	case err := <-errCh:
-		close(errCh)
-		return resp, err
-	case <-ctx.Done():
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, ctx.Err().Error())
+	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	if s.HttpStatusCode == http.StatusInternalServerError {
+		return nil, s
 	}
+
+	s.ProviderStatusCode = resp.Data.Code
+
+	return resp, s
 }
 
 // FloatingShareSettlement a special method is used for sellers who benefit from an incoming amount,
 // more information in https://docs.zarinpal.com/paymentGateway/setshare.html#%D8%AA%D8%B3%D9%88%DB%8C%D9%87-%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%DA%A9%DB%8C-%D8%B4%D9%86%D8%A7%D9%88%D8%B1
-func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, *errors.Error) {
-	errCh := make(chan *errors.Error)
+func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, *status.Status) {
 	req := &floatingShareSettlementRequest{
 		MerchantID:  z.merchantID,
 		Amount:      amount,
@@ -146,24 +139,20 @@ func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, desc
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	resp := &FloatingShareSettlementResponse{}
-	go z.client.Request(ctx, z.requestEndpoint, "POST", "", map[string]string{}, req, resp, errCh)
-
-	select {
-	case err := <-errCh:
-		close(errCh)
-		return resp, err
-	case <-ctx.Done():
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, ctx.Err().Error())
+	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	if s.HttpStatusCode == http.StatusInternalServerError {
+		return nil, s
 	}
+
+	return resp, s
 }
 
 // VerifyFloatingShareSettlement verify floating share settlement
-func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, *errors.Error) {
-	errCh := make(chan *errors.Error)
+func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, *status.Status) {
 	req := &verifyRequest{
 		MerchantID: z.merchantID,
 		Amount:     amount,
@@ -171,17 +160,16 @@ func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount int
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
 	resp := &VerifyFloatingShareSettlementResponse{}
-	go z.client.Request(ctx, z.requestEndpoint, "POST", "", map[string]string{}, req, resp, errCh)
-
-	select {
-	case err := <-errCh:
-		close(errCh)
-		return resp, err
-	case <-ctx.Done():
-		return nil, errors.New(0, http.StatusBadRequest, codes.InvalidArgument, ctx.Err().Error())
+	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	if s.HttpStatusCode == http.StatusInternalServerError {
+		return nil, s
 	}
+
+	s.ProviderStatusCode = resp.Data.Code
+
+	return resp, s
 }
