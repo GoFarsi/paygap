@@ -72,7 +72,7 @@ func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, 
 	}
 
 	resp := &PaymentResponse{}
-	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	s := z.client.Request(ctx, z.requestEndpoint, "", client.POST, map[string]string{}, req, resp)
 	if s.HttpStatusCode == http.StatusInternalServerError {
 		return nil, s
 	}
@@ -95,7 +95,7 @@ func (z *Zarinpal) VerifyPayment(ctx context.Context, amount int, authority stri
 	}
 
 	resp := &VerifyResponse{}
-	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	s := z.client.Request(ctx, z.requestEndpoint, "", client.POST, map[string]string{}, req, resp)
 	if s.HttpStatusCode == http.StatusInternalServerError {
 		return nil, s
 	}
@@ -116,7 +116,7 @@ func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTrans
 	}
 
 	resp := &UnverifiedTransactionsResponse{}
-	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	s := z.client.Request(ctx, z.requestEndpoint, "", client.POST, map[string]string{}, req, resp)
 	if s.HttpStatusCode == http.StatusInternalServerError {
 		return nil, s
 	}
@@ -143,7 +143,7 @@ func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, desc
 	}
 
 	resp := &FloatingShareSettlementResponse{}
-	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	s := z.client.Request(ctx, z.requestEndpoint, "", client.POST, map[string]string{}, req, resp)
 	if s.HttpStatusCode == http.StatusInternalServerError {
 		return nil, s
 	}
@@ -164,7 +164,7 @@ func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount int
 	}
 
 	resp := &VerifyFloatingShareSettlementResponse{}
-	s := z.client.Request(ctx, z.requestEndpoint, "POST", client.POST, map[string]string{}, req, resp)
+	s := z.client.Request(ctx, z.requestEndpoint, "", client.POST, map[string]string{}, req, resp)
 	if s.HttpStatusCode == http.StatusInternalServerError {
 		return nil, s
 	}
