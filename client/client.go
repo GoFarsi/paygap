@@ -26,6 +26,7 @@ type Transporter interface {
 	Request(ctx context.Context, url, contentType string, method Method, headers map[string]string, request interface{}, response interface{}) *status.Status
 	GetClient() *http.Client
 	GetValidator() *validator.Validate
+	GetMutex() *sync.Mutex
 }
 
 // New create client constructor

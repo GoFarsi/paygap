@@ -3,7 +3,7 @@ package zarinpal
 import "github.com/Ja7ad/pgp/client"
 
 type Zarinpal struct {
-	client     *client.Client
+	client     client.Transporter
 	merchantID string `validate:"required"`
 
 	requestEndpoint    string

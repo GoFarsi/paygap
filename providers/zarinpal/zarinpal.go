@@ -28,7 +28,7 @@ type Interface interface {
 }
 
 // New create zarinpal provider object for user factory request methods
-func New(client *client.Client, merchantID string, sandbox bool) (Interface, *status.Status) {
+func New(client client.Transporter, merchantID string, sandbox bool) (Interface, *status.Status) {
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
 	}
