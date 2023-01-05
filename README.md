@@ -4,7 +4,7 @@ Payment gateway providers SDK Go for zarinpal, idpay, pay.ir, and other gateway 
 ## Install
 
 ```shell
-go get -u github.com/GoFarsi/paygap
+go get -u github.com/gofarsi/paygap
 ```
 
 ## Usage
