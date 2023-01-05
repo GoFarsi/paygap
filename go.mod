@@ -3,7 +3,7 @@ module github.com/GoFarsi/paygap
 go 1.19
 
 require (
-	github.com/go-playground/validator/v10 v10.11.0
+	github.com/go-playground/validator/v10 v10.11.1
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 	google.golang.org/grpc v1.51.0
