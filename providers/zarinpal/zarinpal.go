@@ -1,9 +1,9 @@
-package v4
+package zarinpal
 
 import (
 	"context"
-	"github.com/gofarsi/paygap/client"
-	"github.com/gofarsi/paygap/status"
+	"github.com/GoFarsi/paygap/client"
+	"github.com/GoFarsi/paygap/status"
 	"google.golang.org/grpc/codes"
 	"net/http"
 )

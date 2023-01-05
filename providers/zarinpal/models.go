@@ -1,6 +1,6 @@
-package v4
+package zarinpal
 
-import "github.com/gofarsi/paygap/client"
+import "github.com/GoFarsi/paygap/client"
 
 type Zarinpal struct {
 	client     client.Transporter
