@@ -1,4 +1,4 @@
-module github.com/GoFarsi/paygap
+module github.com/gofarsi/paygap
 
 go 1.19
 
