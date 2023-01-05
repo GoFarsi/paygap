@@ -9,7 +9,7 @@ go get -u github.com/GoFarsi/paygap
 
 ## Usage
 
-example for zarinpal provider
+example for zarinpal provider ([Other examples](_example))
 
 ```go
 package main
