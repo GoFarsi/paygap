@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/GoFarsi/pgp/client"
-	zarinpal "github.com/GoFarsi/pgp/providers/zarinpal/v4"
+	"github.com/GoFarsi/paygap/client"
+	zarinpal "github.com/GoFarsi/paygap/providers/zarinpal/v4"
 	"log"
 )
 

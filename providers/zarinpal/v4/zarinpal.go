@@ -2,8 +2,8 @@ package v4
 
 import (
 	"context"
-	"github.com/GoFarsi/pgp/client"
-	"github.com/GoFarsi/pgp/status"
+	"github.com/GoFarsi/paygap/client"
+	"github.com/GoFarsi/paygap/status"
 	"google.golang.org/grpc/codes"
 	"net/http"
 )
