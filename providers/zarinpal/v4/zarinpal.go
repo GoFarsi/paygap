@@ -2,8 +2,8 @@ package v4
 
 import (
 	"context"
-	"github.com/Ja7ad/pgp/client"
-	"github.com/Ja7ad/pgp/status"
+	"github.com/GoFarsi/pgp/client"
+	"github.com/GoFarsi/pgp/status"
 	"google.golang.org/grpc/codes"
 	"net/http"
 )

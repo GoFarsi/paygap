@@ -1,6 +1,6 @@
 package v4
 
-import "github.com/Ja7ad/pgp/client"
+import "github.com/GoFarsi/pgp/client"
 
 type Zarinpal struct {
 	client     client.Transporter

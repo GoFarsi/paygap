@@ -1,4 +1,4 @@
-module github.com/Ja7ad/pgp
+module github.com/GoFarsi/pgp
 
 go 1.19
 
