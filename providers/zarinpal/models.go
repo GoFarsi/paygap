@@ -6,6 +6,7 @@ type Zarinpal struct {
 	client     client.Transporter
 	merchantID string `validate:"required"`
 
+	baseUrl            string
 	requestEndpoint    string
 	verifyEndpoint     string
 	unverifiedEndpoint string

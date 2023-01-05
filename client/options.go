@@ -8,10 +8,18 @@ import (
 
 type Option func(client *Client)
 
-// WithCustomClient use custom http client instead default client
+// WithCustomClient use custom http httpClient instead default httpClient
 func WithCustomClient(client *http.Client) Option {
 	return func(c *Client) {
-		c.client = client
+		if _, ok := client.Transport.(*transport); !ok {
+			t := client.Transport
+			if t != nil {
+				client.Transport = &transport{Base: t}
+			} else {
+				client.Transport = &transport{Base: http.DefaultTransport}
+			}
+		}
+		c.httpClient = client
 	}
 }
 

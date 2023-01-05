@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,8 +11,8 @@ import (
 )
 
 var (
-	_everyRateLimitDuration = 10 * time.Second
-	_preRequest             = 50
+	_everyRateLimitDuration = 3 * time.Second
+	_preRequest             = 30
 )
 
 type Message struct {
@@ -19,36 +20,42 @@ type Message struct {
 	Message string
 }
 
-func TestClient_Request(t *testing.T) {
+func Test_ClientRequest(t *testing.T) {
 	t.Parallel()
 	ctx := context.TODO()
 	server := serverTest()
-
 	c := client(server.Client())
 
 	t.Run("GET", func(t *testing.T) {
-		resp := &Message{}
-		s := c.Request(ctx, server.URL, "", GET, map[string]string{}, nil, resp)
-		if s.HttpStatusCode != http.StatusOK {
-			t.Fatalf("want status code ok, but got %d and err %v", s.HttpStatusCode, s.Error())
-		}
-		t.Log(s, resp)
+		response := &Message{}
+		query := make(map[string]string)
+		query["foo"] = "bar"
+
+		resp, err := c.Get(ctx, &APIConfig{Host: server.URL, Query: query})
+
+		assert.Nil(t, err)
+		assert.Nil(t, resp.GetJSON(response))
+		assert.Equal(t, http.StatusOK, response.Status)
+		assert.Equal(t, query["foo"], resp.GetHttpResponse().Request.URL.Query().Get("foo"))
 	})
 
 	t.Run("POST", func(t *testing.T) {
 		req := &Message{Status: http.StatusOK, Message: "test"}
-		resp := &Message{}
+		response := &Message{}
+		headers := make(map[string]string)
+		headers["foo"] = "bar"
 
-		s := c.Request(ctx, server.URL, "", POST, map[string]string{}, req, resp)
-		if s.HttpStatusCode != http.StatusOK {
-			t.Fatalf("want status code ok, but got %d and err %v", s.HttpStatusCode, s.Error())
-		}
-		t.Log(s, resp)
+		resp, err := c.Post(ctx, &APIConfig{Host: server.URL}, headers, req)
+
+		assert.Nil(t, err)
+		assert.Nil(t, resp.GetJSON(response))
+		assert.Equal(t, http.StatusOK, response.Status)
+		assert.Equal(t, headers["foo"], resp.GetHttpResponse().Request.Header.Get("foo"))
 	})
 
 }
 
-func TestClientWithRateLimit_Request(t *testing.T) {
+func Test_ClientWithRateLimitRequest(t *testing.T) {
 	ctx := context.TODO()
 	server := serverTest()
 	request := 50
@@ -56,12 +63,32 @@ func TestClientWithRateLimit_Request(t *testing.T) {
 	c := clientWithRateLimit(server.Client())
 
 	for i := 0; i < request; i++ {
-		s := c.Request(ctx, server.URL, "", GET, map[string]string{}, nil, nil)
-		if s.HttpStatusCode != http.StatusOK {
-			t.Fatalf("want status code ok, but got %d and err %v", s.HttpStatusCode, s.Error())
-		}
-		t.Log(s)
-		i++
+		t.Run("GET", func(t *testing.T) {
+			response := &Message{}
+			query := make(map[string]string)
+			query["foo"] = "bar"
+
+			resp, err := c.Get(ctx, &APIConfig{Host: server.URL, Query: query})
+
+			assert.Nil(t, err)
+			assert.Nil(t, resp.GetJSON(response))
+			assert.Equal(t, http.StatusOK, response.Status)
+			assert.Equal(t, query["foo"], resp.GetHttpResponse().Request.URL.Query().Get("foo"))
+		})
+
+		t.Run("POST", func(t *testing.T) {
+			req := &Message{Status: http.StatusOK, Message: "test"}
+			response := &Message{}
+			headers := make(map[string]string)
+			headers["foo"] = "bar"
+
+			resp, err := c.Post(ctx, &APIConfig{Host: server.URL}, headers, req)
+
+			assert.Nil(t, err)
+			assert.Nil(t, resp.GetJSON(response))
+			assert.Equal(t, http.StatusOK, response.Status)
+			assert.Equal(t, headers["foo"], resp.GetHttpResponse().Request.Header.Get("foo"))
+		})
 	}
 }
 
