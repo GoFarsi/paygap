@@ -40,6 +40,12 @@ func main() {
 }
 ```
 
+## Contributing
+
+1. fork project in your GitHub account.
+2. create new branch for new changes.
+3. after change code, send Pull Request.
+
 ## TODO
 
 - [x] zarinpal
