@@ -1,4 +1,4 @@
-# PayGap [![Go Reference](https://pkg.go.dev/badge/github.com/gofarsi/paygap.svg)](https://pkg.go.dev/github.com/gofarsi/paygap)
+# PayGap [![Go Reference](https://pkg.go.dev/badge/github.com/GoFarsi/paygap.svg)](https://pkg.go.dev/github.com/GoFarsi/paygap)
 Payment gateway providers SDK Go for zarinpal, idpay, pay.ir, and other gateway providers.
 
 ## Install
