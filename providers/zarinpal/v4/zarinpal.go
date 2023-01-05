@@ -19,9 +19,9 @@ const (
 	ZARINPAL_UNVERIFIED_TRANSACTION_API_ENDPOINT = "/pg/v4/payment/unVerified.json"
 )
 
-var _ Interface = (*Zarinpal)(nil)
+var _ ZarinPalInterface = (*Zarinpal)(nil)
 
-type Interface interface {
+type ZarinPalInterface interface {
 	RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error)
 	VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, error)
 	UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, error)
@@ -30,7 +30,7 @@ type Interface interface {
 }
 
 // New create zarinpal provider object for user factory request methods
-func New(client client.Transporter, merchantID string, sandbox bool) (Interface, error) {
+func New(client client.Transporter, merchantID string, sandbox bool) (ZarinPalInterface, error) {
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
 	}
