@@ -1,4 +1,4 @@
-package zarinpal
+package v4
 
 import "github.com/Ja7ad/pgp/client"
 
