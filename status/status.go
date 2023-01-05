@@ -1,7 +1,6 @@
 package status
 
 import (
-	"errors"
 	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -9,14 +8,14 @@ import (
 )
 
 type Status struct {
-	ProviderStatusCode int
-	GrpcStatusCode     codes.Code
-	HttpStatusCode     int
-	Message            string
+	ProviderStatusCode any        `json:"provider_status_code" xml:"provider_status_code"`
+	GrpcStatusCode     codes.Code `json:"grpc_status_code" xml:"grpc_status_code"`
+	HttpStatusCode     int        `json:"http_status_code" xml:"http_status_code"`
+	Message            string     `json:"message" xml:"message"`
 }
 
 // New create new pgp status
-func New(providerStatusCode, httpStatusCode int, grpcCode codes.Code, message string, params ...interface{}) *Status {
+func New(providerStatusCode any, httpStatusCode int, grpcCode codes.Code, message string, params ...interface{}) *Status {
 	return &Status{
 		ProviderStatusCode: providerStatusCode,
 		HttpStatusCode:     httpStatusCode,
@@ -26,12 +25,12 @@ func New(providerStatusCode, httpStatusCode int, grpcCode codes.Code, message st
 }
 
 // Status return type status
-func (e *Status) Error() error {
-	return errors.New(e.Message)
+func (e *Status) Error() string {
+	return e.Message
 }
 
-// GrpcStatusError create grpc status
-func (e *Status) GrpcStatusError() *status.Status {
+// GrpcStatus create grpc status
+func (e *Status) GrpcStatus() *status.Status {
 	return status.New(e.GrpcStatusCode, e.Message)
 }
 
