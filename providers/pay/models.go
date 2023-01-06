@@ -44,7 +44,7 @@ type VerifyRequest struct {
 type VerifyResponse struct {
 	Status       int    `json:"status"`
 	Amount       string `json:"amount"`
-	TransId      string `json:"transId"`
+	TransId      int    `json:"transId"`
 	FactorNumber string `json:"factorNumber"`
 	Mobile       string `json:"mobile"`
 	Description  string `json:"description"`
