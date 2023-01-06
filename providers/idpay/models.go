@@ -20,13 +20,13 @@ type ErrorResponse struct {
 }
 
 type PaymentRequest struct {
-	OrderId  string `validate:"required, max=50" json:"order_id"`
-	Amount   int    `validate:"required,gte=5000000000, lte=1000" json:"amount"`
+	OrderId  string `validate:"required,max=50" json:"order_id"`
+	Amount   uint   `validate:"required,min=1000,max=5000000000" json:"amount"`
 	Name     string `validate:"max=255" json:"name"`
 	Phone    string `validate:"max=11" json:"phone"`
-	Mail     string `validate:"email, max=255" json:"mail"`
+	Mail     string `validate:"email,max=255" json:"mail"`
 	Desc     string `validate:"max=255" json:"desc"`
-	Callback string `validate:"required, max=2048" json:"callback"`
+	Callback string `validate:"required,max=2048" json:"callback"`
 }
 
 type PaymentResponse struct {
@@ -36,7 +36,7 @@ type PaymentResponse struct {
 
 type VerifyRequest struct {
 	Id      string `validate:"required" json:"id"`
-	OrderId string `validate:"required, max=50" json:"order_id"`
+	OrderId string `validate:"required,max=50" json:"order_id"`
 }
 
 type VerifyResponse struct {
@@ -60,7 +60,7 @@ type VerifyResponse struct {
 
 type TransactionStatusRequest struct {
 	Id      string `validate:"required" json:"id"`
-	OrderId string `validate:"required, max=50" json:"order_id"`
+	OrderId string `validate:"required,max=50" json:"order_id"`
 }
 
 type TransactionStatusResponse struct {
@@ -103,7 +103,7 @@ type TransactionListRequest struct {
 	PageSize            uint     `json:"page_size"`
 	Id                  string   `json:"id"`
 	OrderId             string   `validate:"max=50" json:"order_id"`
-	Amount              int      `validate:"gte=5000000000, lte=1000" json:"amount"`
+	Amount              uint     `validate:"max=5000000000,min=1000" json:"amount"`
 	Status              []string `json:"status"`
 	TrackId             string   `json:"track_id"`
 	PaymentCardNo       string   `validate:"max=16" json:"payment_card_no"`
