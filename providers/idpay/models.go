@@ -22,11 +22,11 @@ type ErrorResponse struct {
 type PaymentRequest struct {
 	OrderId  string `validate:"required,max=50" json:"order_id"`
 	Amount   uint   `validate:"required,min=1000,max=5000000000" json:"amount"`
-	Name     string `validate:"max=255" json:"name"`
-	Phone    string `validate:"max=11" json:"phone"`
+	Name     string `validate:"omitempty,max=255" json:"name"`
+	Phone    string `validate:"omitempty,max=11" json:"phone"`
 	Mail     string `validate:"email,max=255" json:"mail"`
-	Desc     string `validate:"max=255" json:"desc"`
-	Callback string `validate:"required,max=2048" json:"callback"`
+	Desc     string `validate:"omitempty,max=255" json:"desc"`
+	Callback string `validate:"required,max=2048,url" json:"callback"`
 }
 
 type PaymentResponse struct {
@@ -102,11 +102,11 @@ type TransactionListRequest struct {
 	Page                uint     `json:"page"`
 	PageSize            uint     `json:"page_size"`
 	Id                  string   `json:"id"`
-	OrderId             string   `validate:"max=50" json:"order_id"`
-	Amount              uint     `validate:"max=5000000000,min=1000" json:"amount"`
+	OrderId             string   `validate:"omitempty,max=50" json:"order_id"`
+	Amount              uint     `validate:"omitempty,max=5000000000,min=1000" json:"amount"`
 	Status              []string `json:"status"`
 	TrackId             string   `json:"track_id"`
-	PaymentCardNo       string   `validate:"max=16" json:"payment_card_no"`
+	PaymentCardNo       string   `validate:"omitempty,max=16" json:"payment_card_no"`
 	PaymentHashedCardNo string   `json:"payment_hashed_card_no"`
 	PaymentDate         struct {
 		Min uint `json:"min"`

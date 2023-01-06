@@ -11,7 +11,7 @@ go get -u github.com/GoFarsi/paygap
 
 ## Usage
 
-example for zarinpal provider ([Other examples](_example))
+example for zarinpal provider ([Other examples](_examples))
 
 ```go
 package main
@@ -50,7 +50,7 @@ func main() {
 
 - [x] zarinpal
 - [x] idpay
-- [ ] pay.ir
+- [x] pay.ir
 - [ ] yekpay
 - [ ] payping
 - [ ] rayanpay

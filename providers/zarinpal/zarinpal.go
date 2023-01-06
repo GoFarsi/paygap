@@ -48,7 +48,7 @@ func New(client client.Transporter, merchantID string, sandbox bool) (*Zarinpal,
 // RequestPayment create payment request and return status code and authority
 func (z *Zarinpal) RequestPayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
 	req := &paymentRequest{
-		MerchantID:  z.merchantID,
+		merchantID:  z.merchantID,
 		Amount:      amount,
 		Currency:    currency,
 		CallBackURL: callBackUrl,
@@ -76,7 +76,7 @@ func (z *Zarinpal) RequestPayment(ctx context.Context, amount uint, callBackUrl,
 // VerifyPayment transaction by merchant id, amount and authority to payment provider
 func (z *Zarinpal) VerifyPayment(ctx context.Context, amount uint, authority string) (*VerifyResponse, error) {
 	req := &verifyRequest{
-		MerchantID: z.merchantID,
+		merchantID: z.merchantID,
 		Amount:     amount,
 		Authority:  authority,
 	}
@@ -101,7 +101,7 @@ func (z *Zarinpal) VerifyPayment(ctx context.Context, amount uint, authority str
 // UnverifiedTransactions get unverified transactions from provider
 func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, error) {
 	req := &unverifiedTransactionsRequest{
-		MerchantID: z.merchantID,
+		merchantID: z.merchantID,
 	}
 
 	if err := z.client.GetValidator().Struct(req); err != nil {
@@ -125,7 +125,7 @@ func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTrans
 // more information in https://docs.zarinpal.com/paymentGateway/setshare.html#%D8%AA%D8%B3%D9%88%DB%8C%D9%87-%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%DA%A9%DB%8C-%D8%B4%D9%86%D8%A7%D9%88%D8%B1
 func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount uint, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, error) {
 	req := &floatingShareSettlementRequest{
-		MerchantID:  z.merchantID,
+		merchantID:  z.merchantID,
 		Amount:      amount,
 		CallBackURL: callbackUrl,
 		Description: description,
@@ -153,7 +153,7 @@ func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount uint, des
 // VerifyFloatingShareSettlement verify floating share settlement
 func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount uint, authority string) (*VerifyFloatingShareSettlementResponse, error) {
 	req := &verifyRequest{
-		MerchantID: z.merchantID,
+		merchantID: z.merchantID,
 		Amount:     amount,
 		Authority:  authority,
 	}

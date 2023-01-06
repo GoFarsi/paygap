@@ -2,10 +2,12 @@ package idpay
 
 import (
 	"context"
+	"errors"
 	"github.com/GoFarsi/paygap/client"
 	"github.com/GoFarsi/paygap/status"
 	"google.golang.org/grpc/codes"
 	"net/http"
+	"reflect"
 )
 
 const (
@@ -77,8 +79,14 @@ func (i *IdPay) TransactionList(ctx context.Context, req *TransactionListRequest
 }
 
 func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl string, endpoint string) (response RS, err error) {
+	r, ok := reflect.New(reflect.TypeOf(response).Elem()).Interface().(RS)
+	if !ok {
+		return response, errors.New("response type is invalid")
+	}
+
 	headers := make(map[string]string)
 	headers["X-API-KEY"] = i.apiKey
+	headers["Content-Type"] = "application/json"
 
 	if i.sandbox {
 		headers["X-SANDBOX"] = "1"
@@ -97,9 +105,9 @@ func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl stri
 		return response, status.New(errResp.ErrorCode, http.StatusFailedDependency, codes.OK, errResp.ErrorMessage)
 	}
 
-	if err := resp.GetJSON(response); err != nil {
+	if err := resp.GetJSON(r); err != nil {
 		return response, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
 
-	return response, nil
+	return r, nil
 }

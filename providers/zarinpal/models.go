@@ -13,26 +13,26 @@ type Zarinpal struct {
 }
 
 type paymentRequest struct {
-	MerchantID  string                 `json:"merchant_id" validate:"required"`
-	Amount      uint                   `json:"amount" validate:"min=5000"`
+	merchantID  string                 `json:"merchant_id" validate:"required"`
+	Amount      uint                   `json:"amount" validate:"required,min=5000"`
 	Currency    string                 `json:"currency"`
-	CallBackURL string                 `json:"callback_url" validate:"url"`
+	CallBackURL string                 `json:"callback_url" validate:"required,url"`
 	Description string                 `json:"description"`
 	MetaData    map[string]interface{} `json:"metadata"`
 }
 
 type verifyRequest struct {
-	MerchantID string `json:"merchant_id" validate:"required"`
+	merchantID string `json:"merchant_id" validate:"required"`
 	Amount     uint   `json:"amount" validate:"min=0"`
 	Authority  string `json:"authority"`
 }
 
 type unverifiedTransactionsRequest struct {
-	MerchantID string `json:"merchant_id" validate:"required"`
+	merchantID string `json:"merchant_id" validate:"required"`
 }
 
 type floatingShareSettlementRequest struct {
-	MerchantID  string                 `json:"merchant_id" validate:"required"`
+	merchantID  string                 `json:"merchant_id" validate:"required"`
 	Amount      uint                   `json:"amount" validate:"min=5000"`
 	CallBackURL string                 `json:"callback_url" validate:"url"`
 	Description string                 `json:"description"`

@@ -93,7 +93,7 @@ func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, headers map[str
 
 	if len(headers) != 0 {
 		for k, v := range headers {
-			req.Header.Set(k, v)
+			req.Header.Add(k, v)
 		}
 	}
 
