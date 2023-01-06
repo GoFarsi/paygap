@@ -86,7 +86,12 @@ func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, headers map[str
 		return nil, err
 	}
 
-	req, err := http.NewRequest(POST.String(), apiConfig.Host+apiConfig.Path, bytes.NewBuffer(body))
+	url, err := url.JoinPath(apiConfig.Host, apiConfig.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(POST.String(), url, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
