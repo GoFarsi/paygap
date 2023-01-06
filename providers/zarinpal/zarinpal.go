@@ -19,18 +19,8 @@ const (
 	ZARINPAL_UNVERIFIED_TRANSACTION_API_ENDPOINT = "/pg/v4/payment/unVerified.json"
 )
 
-var _ ZarinPalInterface = (*Zarinpal)(nil)
-
-type ZarinPalInterface interface {
-	RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error)
-	VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, error)
-	UnverifiedTransactions(ctx context.Context) (*UnverifiedTransactionsResponse, error)
-	FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, error)
-	VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, error)
-}
-
 // New create zarinpal provider object for user factory request methods
-func New(client client.Transporter, merchantID string, sandbox bool) (ZarinPalInterface, error) {
+func New(client client.Transporter, merchantID string, sandbox bool) (*Zarinpal, error) {
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
 	}
@@ -56,7 +46,7 @@ func New(client client.Transporter, merchantID string, sandbox bool) (ZarinPalIn
 }
 
 // RequestPayment create payment request and return status code and authority
-func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
+func (z *Zarinpal) RequestPayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
 	req := &paymentRequest{
 		MerchantID:  z.merchantID,
 		Amount:      amount,
@@ -84,7 +74,7 @@ func (z *Zarinpal) RequestPayment(ctx context.Context, amount int, callBackUrl, 
 }
 
 // VerifyPayment transaction by merchant id, amount and authority to payment provider
-func (z *Zarinpal) VerifyPayment(ctx context.Context, amount int, authority string) (*VerifyResponse, error) {
+func (z *Zarinpal) VerifyPayment(ctx context.Context, amount uint, authority string) (*VerifyResponse, error) {
 	req := &verifyRequest{
 		MerchantID: z.merchantID,
 		Amount:     amount,
@@ -133,7 +123,7 @@ func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTrans
 
 // FloatingShareSettlement a special method is used for sellers who benefit from an incoming amount,
 // more information in https://docs.zarinpal.com/paymentGateway/setshare.html#%D8%AA%D8%B3%D9%88%DB%8C%D9%87-%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%DA%A9%DB%8C-%D8%B4%D9%86%D8%A7%D9%88%D8%B1
-func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, error) {
+func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount uint, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, error) {
 	req := &floatingShareSettlementRequest{
 		MerchantID:  z.merchantID,
 		Amount:      amount,
@@ -161,7 +151,7 @@ func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount int, desc
 }
 
 // VerifyFloatingShareSettlement verify floating share settlement
-func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount int, authority string) (*VerifyFloatingShareSettlementResponse, error) {
+func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount uint, authority string) (*VerifyFloatingShareSettlementResponse, error) {
 	req := &verifyRequest{
 		MerchantID: z.merchantID,
 		Amount:     amount,
