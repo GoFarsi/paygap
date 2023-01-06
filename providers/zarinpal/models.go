@@ -14,7 +14,7 @@ type Zarinpal struct {
 
 type paymentRequest struct {
 	MerchantID  string                 `json:"merchant_id" validate:"required"`
-	Amount      int                    `json:"amount" validate:"gt=5000"`
+	Amount      uint                   `json:"amount" validate:"min=5000"`
 	Currency    string                 `json:"currency"`
 	CallBackURL string                 `json:"callback_url" validate:"url"`
 	Description string                 `json:"description"`
@@ -23,7 +23,7 @@ type paymentRequest struct {
 
 type verifyRequest struct {
 	MerchantID string `json:"merchant_id" validate:"required"`
-	Amount     int    `json:"amount" validate:"gt=0"`
+	Amount     uint   `json:"amount" validate:"min=0"`
 	Authority  string `json:"authority"`
 }
 
@@ -33,7 +33,7 @@ type unverifiedTransactionsRequest struct {
 
 type floatingShareSettlementRequest struct {
 	MerchantID  string                 `json:"merchant_id" validate:"required"`
-	Amount      int                    `json:"amount" validate:"gt=5000"`
+	Amount      uint                   `json:"amount" validate:"min=5000"`
 	CallBackURL string                 `json:"callback_url" validate:"url"`
 	Description string                 `json:"description"`
 	Wages       []*Wages               `json:"wages"`
