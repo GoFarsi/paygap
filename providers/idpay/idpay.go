@@ -25,6 +25,7 @@ func New(client client.Transporter, apiKey string, sandbox bool) (*IdPay, error)
 
 	idpay := new(IdPay)
 
+	idpay.client = client
 	idpay.apiKey = apiKey
 	idpay.sandbox = sandbox
 	idpay.baseUrl = IDPAY_HOST
@@ -76,10 +77,6 @@ func (i *IdPay) TransactionList(ctx context.Context, req *TransactionListRequest
 }
 
 func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl string, endpoint string) (response RS, err error) {
-	if err := i.client.GetValidator().Struct(req); err != nil {
-		return response, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
-	}
-
 	headers := make(map[string]string)
 	headers["X-API-KEY"] = i.apiKey
 
