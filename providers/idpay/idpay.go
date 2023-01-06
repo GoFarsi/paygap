@@ -19,6 +19,11 @@ const (
 	TRANSACTIONS_ENDPOINT = "/v1.1/payment/transactions"
 )
 
+type (
+	CallBackPostFunc func(ctx context.Context, status int, trackId int, id string, orderId string, amount int, cardNo string, hashedCardNo string, date uint) error
+	CallBackGetFunc  func(ctx context.Context, status int, trackId int, id string, orderId string) error
+)
+
 // New create idpay object for create new request
 func New(client client.Transporter, apiKey string, sandbox bool) (*IdPay, error) {
 	if client == nil {
