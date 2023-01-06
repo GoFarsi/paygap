@@ -9,14 +9,12 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-
 	p, err := pay.New(client.New(), "YOUR_API_KEY", true)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	resp, err := p.CreateTransaction(ctx, &pay.PaymentRequest{
+	resp, err := p.CreateTransaction(context.Background(), &pay.PaymentRequest{
 		Amount:          11000,
 		Redirect:        "http://example.com/callback",
 		Mobile:          "09151234567",
@@ -31,7 +29,7 @@ func main() {
 
 	fmt.Println(resp)
 
-	verifyResp, err := p.VerifyTransaction(ctx, &pay.VerifyRequest{
+	verifyResp, err := p.VerifyTransaction(context.Background(), &pay.VerifyRequest{
 		Token: resp.Token,
 	})
 

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"net/http"
 	"reflect"
+	"strconv"
 )
 
 const (
@@ -17,6 +18,10 @@ const (
 	VERIFY_ENDPOINT  = "/pg/verify"
 )
 
+// CallBackFunc is a function for create call back action
+type CallBackFunc func(ctx context.Context, status int, token string) error
+
+// New create pay object for create and verify transaction in pay.ir service
 func New(client client.Transporter, apiKey string, sandbox bool) (*Pay, error) {
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
@@ -41,6 +46,7 @@ func New(client client.Transporter, apiKey string, sandbox bool) (*Pay, error) {
 	return pay, nil
 }
 
+// CreateTransaction create new transaction and return status and token
 func (p *Pay) CreateTransaction(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
 	if err := p.client.GetValidator().Struct(req); err != nil {
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
@@ -53,6 +59,7 @@ func (p *Pay) CreateTransaction(ctx context.Context, req *PaymentRequest) (*Paym
 	return request[*Request, *PaymentResponse](ctx, p, gatewayReq, p.paymentEndpoint)
 }
 
+// VerifyTransaction payment transaction via token
 func (p *Pay) VerifyTransaction(ctx context.Context, req *VerifyRequest) (*VerifyResponse, error) {
 	if err := p.client.GetValidator().Struct(req); err != nil {
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
@@ -63,6 +70,22 @@ func (p *Pay) VerifyTransaction(ctx context.Context, req *VerifyRequest) (*Verif
 	gatewayReq.VerifyRequest = req
 
 	return request[*Request, *VerifyResponse](ctx, p, gatewayReq, p.verifyEndpoint)
+}
+
+// DefaultCallback is default callback for http server handler,
+// example :
+//
+//	        http.Handle("/callback", pay.DefaultCallback(callback))
+//		    http.ListenAndServe(":8080", nil)
+func DefaultCallback(actionFunc CallBackFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode, _ := strconv.Atoi(r.URL.Query().Get("status"))
+		token := r.URL.Query().Get("token")
+
+		if err := actionFunc(r.Context(), statusCode, token); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
 }
 
 func request[RQ any, RS any](ctx context.Context, p *Pay, req RQ, endpoint string) (response RS, err error) {
