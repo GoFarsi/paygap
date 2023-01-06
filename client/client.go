@@ -37,6 +37,11 @@ func New(opts ...Option) Transporter {
 	for _, opt := range opts {
 		opt(client)
 	}
+
+	if client.httpClient == nil {
+		client.httpClient = http.DefaultClient
+	}
+
 	return client
 }
 
