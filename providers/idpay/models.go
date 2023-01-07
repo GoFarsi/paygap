@@ -15,7 +15,7 @@ type IdPay struct {
 }
 
 type ErrorResponse struct {
-	ErrorCode    int    `json:"error_code"`
+	ErrorCode    any    `json:"error_code"`
 	ErrorMessage string `json:"error_message"`
 }
 
