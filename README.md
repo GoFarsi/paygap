@@ -51,7 +51,6 @@ func main() {
 - [x] zarinpal
 - [x] idpay
 - [x] pay.ir
-- [ ] yekpay
 - [ ] payping
 - [ ] rayanpay
 - [ ] nextpay
