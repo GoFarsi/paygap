@@ -11,6 +11,8 @@ import (
 	"strconv"
 )
 
+const API_VERSION = "1"
+
 const (
 	PAY_HOST = "https://pay.ir"
 

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	c := client.New()
-	i, err := idpay.New(c, "YOUR_API_KEY", false)
+	i, err := idpay.New(c, "YOUR_API_KEY", true)
 	if err != nil {
 		log.Fatal(err)
 	}

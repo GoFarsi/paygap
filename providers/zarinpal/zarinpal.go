@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+const API_VERSION = "4"
+
 const (
 	ZARINPAL_HOST         = "https://api.zarinpal.com"
 	ZARINPAL_SANDBOX_HOST = "https://sandbox.zarinpal.com"

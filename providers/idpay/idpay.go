@@ -10,6 +10,8 @@ import (
 	"reflect"
 )
 
+const API_VERSION = "1.1"
+
 const (
 	IDPAY_HOST = "https://api.idpay.ir"
 
