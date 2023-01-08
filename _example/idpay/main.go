@@ -10,7 +10,7 @@ import (
 
 func main() {
 	c := client.New()
-	i, err := idpay.New(c, "YOUR_API_KEY", true)
+	i, err := idpay.New(c, "key", true)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,11 +22,21 @@ func main() {
 		Phone:    "09151234567",
 		Mail:     "idpay@gmail.com",
 		Desc:     "example description",
-		Callback: "http://example.com/callback",
+		Callback: "https://example.com/callback",
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println(resp)
+
+	verifyResp, err := i.VerifyTransaction(context.Background(), &idpay.VerifyRequest{
+		Id:      resp.Id,
+		OrderId: "xxxxxxxx-xxxxxx-xxxx",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(verifyResp)
 }

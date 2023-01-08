@@ -105,7 +105,7 @@ func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl stri
 		return response, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
 
-	if resp.GetHttpResponse().StatusCode != http.StatusOK {
+	if resp.GetHttpResponse().StatusCode != http.StatusOK|http.StatusCreated {
 		if err := resp.GetJSON(errResp); err != nil {
 			return response, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 		}
