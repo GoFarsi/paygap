@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"net/http"
 	"reflect"
+	"strconv"
 )
 
 const API_VERSION = "1.1"
@@ -55,7 +56,7 @@ func (i *IdPay) CreateTransaction(ctx context.Context, req *PaymentRequest) (*Pa
 	if err := i.client.GetValidator().Struct(req); err != nil {
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
-	return request[*PaymentRequest, *PaymentResponse](ctx, i, req, i.baseUrl, i.paymentEndpoint)
+	return request[*PaymentRequest, *PaymentResponse](ctx, i, req, i.baseUrl, i.paymentEndpoint, nil)
 }
 
 // VerifyTransaction verify an transaction base on id and order id
@@ -64,7 +65,7 @@ func (i *IdPay) VerifyTransaction(ctx context.Context, req *VerifyRequest) (*Ver
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
-	return request[*VerifyRequest, *VerifyResponse](ctx, i, req, i.baseUrl, i.verifyEndpoint)
+	return request[*VerifyRequest, *VerifyResponse](ctx, i, req, i.baseUrl, i.verifyEndpoint, nil)
 }
 
 // TransactionStatus check transaction status and return transaction details
@@ -73,7 +74,7 @@ func (i *IdPay) TransactionStatus(ctx context.Context, req *TransactionStatusReq
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
-	return request[*TransactionStatusRequest, *TransactionStatusResponse](ctx, i, req, i.baseUrl, i.inquiryEndpoint)
+	return request[*TransactionStatusRequest, *TransactionStatusResponse](ctx, i, req, i.baseUrl, i.inquiryEndpoint, nil)
 }
 
 // TransactionList get list of transaction with set page size and page
@@ -82,10 +83,17 @@ func (i *IdPay) TransactionList(ctx context.Context, req *TransactionListRequest
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
 
-	return request[*TransactionListRequest, *TransactionListResponse](ctx, i, req, i.baseUrl, i.transactionsEndpoint)
+	query := make(map[string]string)
+
+	if req.PageSize != 0 {
+		query["page"] = strconv.Itoa(req.Page)
+		query["page_size"] = strconv.Itoa(req.PageSize)
+	}
+
+	return request[*TransactionListRequest, *TransactionListResponse](ctx, i, req, i.baseUrl, i.transactionsEndpoint, query)
 }
 
-func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl string, endpoint string) (response RS, err error) {
+func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl string, endpoint string, queryParams map[string]string) (response RS, err error) {
 	r, ok := reflect.New(reflect.TypeOf(response).Elem()).Interface().(RS)
 	if !ok {
 		return response, errors.New("response type is invalid")
@@ -100,7 +108,7 @@ func request[RQ any, RS any](ctx context.Context, i *IdPay, req RQ, baseUrl stri
 	}
 
 	errResp := &ErrorResponse{}
-	resp, err := i.client.Post(ctx, &client.APIConfig{Host: baseUrl, Path: endpoint}, headers, req)
+	resp, err := i.client.Post(ctx, &client.APIConfig{Host: baseUrl, Path: endpoint, Headers: headers, Query: queryParams}, req)
 	if err != nil {
 		return response, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}

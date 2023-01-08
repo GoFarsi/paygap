@@ -26,7 +26,7 @@ type Transporter interface {
 	GetClient() *http.Client
 	GetValidator() *validator.Validate
 	Get(ctx context.Context, apiConfig *APIConfig) (*Response, error)
-	Post(ctx context.Context, apiConfig *APIConfig, headers map[string]string, apiRequest any) (*Response, error)
+	Post(ctx context.Context, apiConfig *APIConfig, apiRequest any) (*Response, error)
 }
 
 // New create httpClient constructor
@@ -63,6 +63,13 @@ func (c *Client) Get(ctx context.Context, apiConfig *APIConfig) (*Response, erro
 	if err != nil {
 		return nil, err
 	}
+
+	if len(apiConfig.Headers) != 0 {
+		for k, v := range apiConfig.Headers {
+			req.Header.Add(k, v)
+		}
+	}
+
 	if len(apiConfig.Query) != 0 {
 		req.URL.RawQuery = c.queryBuilder(apiConfig.Query)
 	}
@@ -76,7 +83,7 @@ func (c *Client) Get(ctx context.Context, apiConfig *APIConfig) (*Response, erro
 }
 
 // Post do post request and return response
-func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, headers map[string]string, apiRequest any) (*Response, error) {
+func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, apiRequest any) (*Response, error) {
 	if err := c.awaitRateLimiter(ctx); err != nil {
 		return nil, err
 	}
@@ -96,10 +103,14 @@ func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, headers map[str
 		return nil, err
 	}
 
-	if len(headers) != 0 {
-		for k, v := range headers {
+	if len(apiConfig.Headers) != 0 {
+		for k, v := range apiConfig.Headers {
 			req.Header.Add(k, v)
 		}
+	}
+
+	if len(apiConfig.Query) != 0 {
+		req.URL.RawQuery = c.queryBuilder(apiConfig.Query)
 	}
 
 	resp, err := c.do(ctx, req)

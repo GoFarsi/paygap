@@ -99,8 +99,9 @@ type TransactionStatusResponse struct {
 }
 
 type TransactionListRequest struct {
-	Page                uint     `json:"page"`
-	PageSize            uint     `json:"page_size"`
+	Page     int `json:"-"`
+	PageSize int `json:"-"`
+
 	Id                  string   `json:"id"`
 	OrderId             string   `validate:"omitempty,max=50" json:"order_id"`
 	Amount              uint     `validate:"omitempty,max=5000000000,min=1000" json:"amount"`

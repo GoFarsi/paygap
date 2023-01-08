@@ -100,7 +100,7 @@ func request[RQ any, RS any](ctx context.Context, p *Pay, req RQ, endpoint strin
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
 
-	resp, err := p.client.Post(ctx, &client.APIConfig{Host: p.host, Path: endpoint}, headers, req)
+	resp, err := p.client.Post(ctx, &client.APIConfig{Host: p.host, Path: endpoint, Headers: headers}, req)
 	if err != nil {
 		return response, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}

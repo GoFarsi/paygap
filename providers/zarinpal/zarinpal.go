@@ -63,7 +63,7 @@ func (z *Zarinpal) RequestPayment(ctx context.Context, amount uint, callBackUrl,
 	}
 
 	response := &PaymentResponse{}
-	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, nil, req)
+	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, req)
 	if err != nil {
 		return nil, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
@@ -88,7 +88,7 @@ func (z *Zarinpal) VerifyPayment(ctx context.Context, amount uint, authority str
 	}
 
 	response := &VerifyResponse{}
-	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.verifyEndpoint}, nil, req)
+	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.verifyEndpoint}, req)
 	if err != nil {
 		return nil, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
@@ -111,7 +111,7 @@ func (z *Zarinpal) UnverifiedTransactions(ctx context.Context) (*UnverifiedTrans
 	}
 
 	response := &UnverifiedTransactionsResponse{}
-	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.unverifiedEndpoint}, nil, req)
+	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.unverifiedEndpoint}, req)
 	if err != nil {
 		return nil, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
@@ -140,7 +140,7 @@ func (z *Zarinpal) FloatingShareSettlement(ctx context.Context, amount uint, des
 	}
 
 	response := &FloatingShareSettlementResponse{}
-	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, nil, req)
+	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, req)
 	if err != nil {
 		return nil, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
@@ -165,7 +165,7 @@ func (z *Zarinpal) VerifyFloatingShareSettlement(ctx context.Context, amount uin
 	}
 
 	response := &VerifyFloatingShareSettlementResponse{}
-	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, nil, req)
+	resp, err := z.client.Post(ctx, &client.APIConfig{Host: z.baseUrl, Path: z.requestEndpoint}, req)
 	if err != nil {
 		return nil, status.New(0, http.StatusInternalServerError, codes.Internal, err.Error())
 	}
