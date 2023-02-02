@@ -5,11 +5,15 @@ import (
 )
 
 type Payping struct {
-	client     client.Transporter
-	merchantID string `validate:"required"`
+	client client.Transporter
 
-	baseUrl            string
-	requestEndpoint    string
-	verifyEndpoint     string
-	unverifiedEndpoint string
+	baseUrl                     string
+	paymentEndpoint             string
+	verifyEndpoint              string
+	multiplePaymentEndpoint     string
+	blockMoneyPaymentEndpoint   string
+	unBlockMoneyPaymentEndpoint string
+	posEndpoint                 string
+
+	apiToken string
 }

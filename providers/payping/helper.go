@@ -3,6 +3,7 @@ package payping
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 
@@ -17,8 +18,12 @@ func request[RQ any, RS any](ctx context.Context, payping *Payping, req RQ, base
 		return response, errors.New("response type is invalid")
 	}
 
+	if payping.apiToken == "" || len(payping.apiToken) < 10 {
+		return response, errors.New("jwt token is invalid")
+	}
+
 	headers := make(map[string]string)
-	headers["X-API-KEY"] = payping.apiKey
+	headers["Authorization"] = fmt.Sprintf("Bearer %s", payping.apiToken)
 	headers["Content-Type"] = "application/json"
 
 	// TODO: can review if SANDBOX was available

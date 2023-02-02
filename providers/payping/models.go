@@ -14,8 +14,8 @@ type PaymentResponse struct {
 }
 
 type VerifyRequest struct {
-	RefId  uint   `json:"refId" validate:"required"`
-	Amount string `json:"Amount" validate:"required,min=100,max=50000000"`
+	RefId  string `json:"refId" validate:"required"`
+	Amount int32  `json:"Amount" validate:"required,min=100,max=50000000"`
 }
 
 type VerifyResponse struct {
