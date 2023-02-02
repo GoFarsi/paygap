@@ -1,34 +1,53 @@
 package payping
 
-import "context"
+import (
+	"context"
+	"net/http"
 
-// RequestPayment create payment request and return status code and authority
+	"github.com/GoFarsi/paygap/status"
+	"google.golang.org/grpc/codes"
+)
+
 // refrence: https://docs.payping.ir/#operation/CreateSinglePayment
-func (p *Payping) RequestPayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
-	return &PaymentResponse{}, nil
+func (p *Payping) RequestPayment(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
+	// return &PaymentResponse{}, nil
+	if err := p.client.GetValidator().Struct(req); err != nil {
+		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
+	}
+
+	gatewayReq := new(Request)
+	gatewayReq.API = p.apiKey
+	gatewayReq.PaymentRequest = req
+
+	return request[*PaymentRequest, *PaymentResponse](ctx, p, gatewayReq, p.paymentEndpoint)
 }
 
-// VerifyPayment transaction by merchant id, amount and authority to payment provider
-func (p *Payping) VerifyPayment(ctx context.Context, amount uint, authority string) (*VerifyResponse, error) {
+// refrence: https://docs.payping.ir/#operation/VerifyPayment
+func (p *Payping) VerifyPayment(ctx context.Context, req *VerifyRequest) (*VerifyResponse, error) {
 	return &VerifyResponse{}, nil
 }
 
-func (p *Payping) RequestSharePayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
+// refrence: https://docs.payping.ir/#operation/CreateMultiPayment
+func (p *Payping) RequestSharePayment(ctx context.Context, req *SharePaymentRequest) (*PaymentResponse, error) {
 	return &PaymentResponse{}, nil
 }
 
-func (p *Payping) SharePaymentSettlement(ctx context.Context, amount uint, description, callbackUrl string, wages []*Wages, metaData map[string]interface{}) (*FloatingShareSettlementResponse, error) {
-	return &FloatingShareSettlementResponse{}, nil
-}
-
-func (p *Payping) RequestBlockingPayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
+// refrence: https://docs.payping.ir/#operation/CreateBlockPayment
+func (p *Payping) RequestBlockingPayment(ctx context.Context, req *BlockedPaymentRequest) (*PaymentResponse, error) {
 	return &PaymentResponse{}, nil
 }
 
-func (p *Payping) ReleasingBlockingPayment(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
-	return &PaymentResponse{}, nil
+// refrence: https://docs.payping.ir/#operation/UnBlockPayment
+func (p *Payping) ReleasingBlockedPayment(ctx context.Context, req *ReleasingBlockedPaymentRequest) error {
+	return nil
 }
 
-func (p *Payping) PaymentWithTracingId(ctx context.Context, amount uint, callBackUrl, currency, description string, metaData map[string]interface{}) (*PaymentResponse, error) {
-	return &PaymentResponse{}, nil
+// refrence: https://docs.payping.ir/#operation/CreateIdPosPayment
+func (p *Payping) PaymentWithTracingId(ctx context.Context, req *PaymentWithTracerIdRequest) (*PaymentWithTracerIdResponse, error) {
+	return &PaymentWithTracerIdResponse{}, nil
+}
+
+// refrence: https://docs.payping.ir/#operation/CancelPayment
+func (p *Payping) PaymentSuspending(ctx context.Context, req *PaymentSuspedingRequest) error {
+	return nil
 }

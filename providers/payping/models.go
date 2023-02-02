@@ -1,77 +1,79 @@
 package payping
 
-type paymentRequest struct {
-	merchantID  string                 `json:"merchant_id" validate:"required"`
-	Amount      uint                   `json:"amount" validate:"required,min=5000"`
-	Currency    string                 `json:"currency"`
-	CallBackURL string                 `json:"callback_url" validate:"required,url"`
-	Description string                 `json:"description"`
-	MetaData    map[string]interface{} `json:"metadata"`
-}
-
-type verifyRequest struct {
-	merchantID string `json:"merchant_id" validate:"required"`
-	Amount     uint   `json:"amount" validate:"min=0"`
-	Authority  string `json:"authority"`
-}
-
-type unverifiedTransactionsRequest struct {
-	merchantID string `json:"merchant_id" validate:"required"`
-}
-
-type floatingShareSettlementRequest struct {
-	merchantID  string                 `json:"merchant_id" validate:"required"`
-	Amount      uint                   `json:"amount" validate:"min=5000"`
-	CallBackURL string                 `json:"callback_url" validate:"url"`
-	Description string                 `json:"description"`
-	Wages       []*Wages               `json:"wages"`
-	MetaData    map[string]interface{} `json:"metadata"`
+type PaymentRequest struct {
+	Amount        int32  `json:"amount" validate:"required,min=100,max=50000000"`
+	PayerIdentity string `json:"payerIdentity"`
+	PayerName     string `json:"payerName" validate:"required"`
+	Description   string `json:"description"`
+	ReturnUrl     string `json:"returnUrl" validate:"required,url"`
+	ClientRefId   string `json:"clientRefId"`
 }
 
 type PaymentResponse struct {
-	Data   *Data    `json:"data"`
-	Errors []string `json:"errors"`
+	Code string `json:"code"`
+}
+
+type VerifyRequest struct {
+	RefId  uint   `json:"refId" validate:"required"`
+	Amount string `json:"Amount" validate:"required,min=100,max=50000000"`
 }
 
 type VerifyResponse struct {
-	Data   *Data    `json:"data"`
-	Errors []string `json:"errors"`
+	Amount      int32  `json:"amount"`
+	CardNumber  string `json:"cardNumber"`
+	CardHashPan string `json:"cardHashPan"`
 }
 
-type UnverifiedTransactionsResponse struct {
-	Data *Data `json:"data"`
+type SharePaymentRequest struct {
+	Pairs       []pairs `json:"pairs" validate:"required"`
+	PayerName   string  `json:"payerName" validate:"required"`
+	ReturnUrl   string  `json:"returnUrl" validate:"required,url"`
+	ClientRefId string  `json:"clientRefId"`
 }
 
-type FloatingShareSettlementResponse struct {
-	Wages []*Wages `json:"wages"`
+type pairs struct {
+	Amount       int32  `json:"amount" validate:"required"`
+	Name         string `json:"name"`
+	UserIdentity string `json:"userIdentity" validate:"required"`
+	Description  string `json:"description"`
 }
 
-type VerifyFloatingShareSettlementResponse struct {
-	Data   *Data    `json:"data"`
-	Errors []string `json:"errors"`
+type BlockedPaymentRequest struct {
+	Pairs       []pairs `json:"pairs" validate:"required"`
+	PayerName   string  `json:"payerName" validate:"required"`
+	ReturnUrl   string  `json:"returnUrl" validate:"required,url"`
+	ClientRefId string  `json:"clientRefId"`
 }
 
-type Data struct {
-	Code        int      `json:"code"`
-	Message     string   `json:"message"`
-	Authority   string   `json:"authority,omitempty"`
-	CardHash    string   `json:"card_hash,omitempty"`
-	CardPan     string   `json:"card_pan,omitempty"`
-	RefID       int      `json:"ref_id,omitempty"`
-	FeeType     string   `json:"fee_type,omitempty"`
-	Fee         int      `json:"fee,omitempty"`
-	Wages       []*Wages `json:"wages,omitempty"`
-	Authorities []struct {
-		Authority   string `json:"authority"`
-		Amount      int    `json:"amount"`
-		CallBackURL string `json:"callback_url"`
-		Referer     string `json:"referer"`
-		Date        string `json:"date"`
-	} `json:"authorities,omitempty"`
+type ReleasingBlockedPaymentRequest struct {
+	Code     string `json:"code"`
+	ClientId string `json:"clientId"`
 }
 
-type Wages struct {
-	Iban        string `json:"iban"`
-	Amount      int    `json:"amount"`
-	Description string `json:"description"`
+type PaymentWithTracerIdRequest struct {
+	Amount        int32  `json:"authority" validate:"required,min=100,max=50000000"`
+	PayerIdentity string `json:"payerIdentity"`
+	PayerName     string `json:"payerName"`
+	Description   string `json:"description"`
+	ReturnUrl     string `json:"returnUrl" validate:"required,url"`
+	ClientRefId   string `json:"clientRefId"`
+}
+
+type PaymentWithTracerIdResponse struct {
+	Itd  int32  `json:"itd"`
+	Code string `json:"code"`
+}
+
+type PaymentSuspedingRequest struct {
+	Amount        int32  `json:"authority" validate:"required,min=100,max=50000000"`
+	PayerIdentity string `json:"payerIdentity"`
+	PayerName     string `json:"payerName"`
+	Description   string `json:"description"`
+	ReturnUrl     string `json:"returnUrl" validate:"required,url"`
+	ClientRefId   string `json:"clientRefId"`
+}
+
+type ErrorResponse struct {
+	ErrorCode    any    `json:"error_code"`
+	ErrorMessage string `json:"error_message"`
 }
