@@ -3,7 +3,7 @@ Payment gateway providers SDK Go for zarinpal, idpay, pay.ir, and other gateway 
 
 ![paygap](assets/banner.jpg)
 
-## Install
+## Install For ![GitHub go.mod Go version (branch & subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/GoFarsi/paygap/main)
 
 ```shell
 go get -u github.com/GoFarsi/paygap
