@@ -21,9 +21,9 @@ const (
 )
 
 func New(client client.Transporter, terminalId string, amount int64,
-	merchantKey string, verifyUrl string, merchantId string,
+	merchantKey string, returnUrl string, merchantId string,
 	purchasePage string, enableMultiplexing bool,
-	multiplexingData MultiplexingData) (*Sadad, error) {
+	multiplexingData *MultiplexingData) (*Sadad, error) {
 
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
@@ -40,10 +40,10 @@ func New(client client.Transporter, terminalId string, amount int64,
 		OrderId:            orderId,
 		AdditionalData:     "",
 		LocalDateTime:      time.Now(),
-		ReturnUrl:          verifyUrl,
+		ReturnUrl:          returnUrl,
 		SignData:           "",
 		EnableMultiplexing: enableMultiplexing,
-		MultiplexingData:   multiplexingData,
+		MultiplexingData:   *multiplexingData,
 		MerchantKey:        merchantKey,
 		PurchasePage:       purchasePage,
 	}
