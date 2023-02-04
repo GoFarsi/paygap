@@ -27,6 +27,18 @@ type Sadad struct {
 	MerchantKey        string           `json:"merchant_key"`
 	PurchasePage       string           `json:"purchase_page"`
 }
+
+type PaymentRequest struct {
+	TerminalId    string    `json:"terminal_id"`
+	MerchantId    string    `json:"merchant_id"`
+	Amount        int64     `json:"amount"`
+	OrderId       string    `json:"order_id"`
+	LocalDateTime time.Time `json:"local_date_time"`
+	ReturnUrl     string    `json:"return_url"`
+	SignData      string    `json:"sign_data"`
+	//EnableMultiplexing bool             `json:"enable_multiplexing"`
+	//MultiplexingData   MultiplexingData `json:"multiplexing_data"`
+}
 type MultiplexingData struct {
 	Type             MultiplexingType       `json:"type"`
 	MultiplexingRows []MultiplexingDataItem `json:"multiplexingRows"`
@@ -85,6 +97,16 @@ type PurchaseResult struct {
 	VerifyResultData VerifyResultData `json:"verify_result_data"`
 }
 
+type PayResultData struct {
+	ResCode     string `json:"res_code"`
+	Token       string `json:"token"`
+	Description string `json:"description"`
+}
+
+type VerifyRequest struct {
+	token    string `json:"token"`
+	SignData string `json:"signData"`
+}
 type VerifyResultData struct {
 	Succeed       bool   `json:"succeed"`
 	ResCode       string `json:"resCode"`
