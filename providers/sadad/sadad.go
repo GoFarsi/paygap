@@ -112,9 +112,7 @@ func (s *Sadad) VerifyRequest(ctx context.Context, PayRes PayResultData) (*Verif
 
 	return response, nil
 }
-
 func (s *Sadad) SigningData(plainText string) (string, error) {
-
 	key := []byte(s.MerchantKey)
 	plaintext := []byte(plainText)
 	block, err := aes.NewCipher(key)
@@ -124,6 +122,6 @@ func (s *Sadad) SigningData(plainText string) (string, error) {
 	mode := ecb.NewECBEncrypter(block)
 	ciphertext := make([]byte, len(plaintext))
 	mode.CryptBlocks(ciphertext, plaintext)
-	sb64Enc := b64.StdEncoding.EncodeToString([]byte(plaintext))
+	sb64Enc := b64.StdEncoding.EncodeToString([]byte(ciphertext))
 	return sb64Enc, nil
 }
