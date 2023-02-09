@@ -57,4 +57,4 @@ func main() {
 - [ ] mellat
 - [ ] parsian
 - [ ] pasargad
-- [ ] sadad
+- [x] sadad
