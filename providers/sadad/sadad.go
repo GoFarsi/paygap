@@ -4,13 +4,12 @@ import (
 	"context"
 	"crypto/aes"
 	b64 "encoding/base64"
+	"fmt"
 	"github.com/GoFarsi/paygap/client"
 	"github.com/GoFarsi/paygap/status"
 	"github.com/andreburgaud/crypt2go/ecb"
 	"google.golang.org/grpc/codes"
-	"math/rand"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -20,59 +19,53 @@ const (
 	requestVerifyUrl  = "/api/v0/Advice/Verify"
 )
 
-func New(client client.Transporter, terminalId string, amount int64,
+func New(client client.Transporter, terminalId string,
 	merchantKey string, returnUrl string, merchantId string,
-	purchasePage string, enableMultiplexing bool,
-	multiplexingData *MultiplexingData) (*Sadad, error) {
+	purchasePage string, enableMultiplexing bool) (*Sadad, error) {
 
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
 	}
-	orderId := string(rand.Int())
-	str := []string{terminalId, orderId, string(amount)}
-	joinedString := strings.Join(str, ";")
 
 	sadad := &Sadad{
 		Client:             client,
 		TerminalId:         terminalId,
 		MerchantId:         merchantId,
-		Amount:             amount,
-		OrderId:            orderId,
-		AdditionalData:     "",
-		LocalDateTime:      time.Now(),
 		ReturnUrl:          returnUrl,
-		SignData:           "",
 		EnableMultiplexing: enableMultiplexing,
-		MultiplexingData:   *multiplexingData,
 		MerchantKey:        merchantKey,
 		PurchasePage:       purchasePage,
 	}
 
-	signedDataAsSadadWay, er := sadad.SigningData(joinedString)
-	if er != nil {
-		panic(er)
-	}
-	sadad.SignData = signedDataAsSadadWay
-
 	return sadad, nil
 }
 
-func (s *Sadad) PayRequest(ctx context.Context) (*PayResultData, error) {
+func (s *Sadad) PaymentRequest(ctx context.Context, amount int64, orderId string, MultiplexinData *MultiplexingData) (*PayResultData, error) {
 
-	req := &PaymentRequest{
-		MerchantId:    s.MerchantId,
-		Amount:        s.Amount,
-		TerminalId:    s.TerminalId,
-		ReturnUrl:     s.ReturnUrl,
-		SignData:      s.SignData,
-		OrderId:       s.OrderId,
-		LocalDateTime: s.LocalDateTime,
+	joinedString := fmt.Sprintf("%s;%s;%d", s.TerminalId, orderId, amount)
+	signedDataAsSadadWay, signErr := s.SigningData(joinedString)
+	if signErr != nil {
+		return nil, signErr
 	}
+	req := &PaymentRequest{
+		MerchantId:         s.MerchantId,
+		Amount:             amount,
+		TerminalId:         s.TerminalId,
+		ReturnUrl:          s.ReturnUrl,
+		SignData:           signedDataAsSadadWay,
+		OrderId:            orderId,
+		LocalDateTime:      time.Now(),
+		EnableMultiplexing: s.EnableMultiplexing,
+		MultiplexingData:   *MultiplexinData,
+	}
+
 	if err := s.Client.GetValidator().Struct(req); err != nil {
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
-	if !s.MultiplexingData.IsValidated() {
-		return nil, status.New(1, http.StatusBadRequest, codes.FailedPrecondition, "خطا در دیتا ورودی برای تسهیم")
+	if s.EnableMultiplexing {
+		if !MultiplexinData.IsValidated() {
+			return nil, status.New(1, http.StatusBadRequest, codes.FailedPrecondition, "خطا در دیتا ورودی برای تسهیم")
+		}
 	}
 	response := &PayResultData{}
 	resp, err := s.Client.Post(ctx, &client.APIConfig{Host: baseUrl, Path: requestPaymentUrl}, req)

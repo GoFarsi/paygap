@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type MultiplexingType int64
+type MultiplexingType int
 
 const (
 	Percentage MultiplexingType = iota
@@ -14,30 +14,12 @@ const (
 
 type Sadad struct {
 	Client             client.Transporter
-	TerminalId         string           `json:"terminal_id"`
-	MerchantId         string           `json:"merchant_id"`
-	Amount             int64            `json:"amount"`
-	OrderId            string           `json:"order_id"`
-	AdditionalData     string           `json:"additional_data"`
-	LocalDateTime      time.Time        `json:"local_date_time"`
-	ReturnUrl          string           `json:"return_url"`
-	SignData           string           `json:"sign_data"`
-	EnableMultiplexing bool             `json:"enable_multiplexing"`
-	MultiplexingData   MultiplexingData `json:"multiplexing_data"`
-	MerchantKey        string           `json:"merchant_key"`
-	PurchasePage       string           `json:"purchase_page"`
-}
-
-type PaymentRequest struct {
-	TerminalId    string    `json:"terminal_id"`
-	MerchantId    string    `json:"merchant_id"`
-	Amount        int64     `json:"amount"`
-	OrderId       string    `json:"order_id"`
-	LocalDateTime time.Time `json:"local_date_time"`
-	ReturnUrl     string    `json:"return_url"`
-	SignData      string    `json:"sign_data"`
-	//EnableMultiplexing bool             `json:"enable_multiplexing"`
-	//MultiplexingData   MultiplexingData `json:"multiplexing_data"`
+	TerminalId         string `json:"terminal_id"`
+	MerchantId         string `json:"merchant_id"`
+	ReturnUrl          string `json:"return_url"`
+	EnableMultiplexing bool   `json:"enable_multiplexing"`
+	MerchantKey        string `json:"merchant_key"`
+	PurchasePage       string `json:"purchase_page"`
 }
 type MultiplexingData struct {
 	Type             MultiplexingType       `json:"type"`
@@ -46,6 +28,42 @@ type MultiplexingData struct {
 type MultiplexingDataItem struct {
 	IbanNumber int32 `json:"iban_number"`
 	Value      int64 `json:"value"`
+}
+
+type PurchaseResult struct {
+	OrderId          string           `json:"order_id"`
+	Token            string           `json:"token"`
+	ResCode          string           `json:"res_code"`
+	VerifyResultData VerifyResultData `json:"verify_result_data"`
+}
+type PaymentRequest struct {
+	TerminalId         string           `json:"terminal_id"`
+	MerchantId         string           `json:"merchant_id"`
+	Amount             int64            `json:"amount"`
+	OrderId            string           `json:"order_id"`
+	LocalDateTime      time.Time        `json:"local_date_time"`
+	ReturnUrl          string           `json:"return_url"`
+	SignData           string           `json:"sign_data"`
+	EnableMultiplexing bool             `json:"enable_multiplexing"`
+	MultiplexingData   MultiplexingData `json:"multiplexing_data"`
+}
+type PayResultData struct {
+	ResCode     string `json:"res_code"`
+	Token       string `json:"token"`
+	Description string `json:"description"`
+}
+type VerifyRequest struct {
+	token    string `json:"token"`
+	SignData string `json:"signData"`
+}
+type VerifyResultData struct {
+	Succeed       bool   `json:"succeed"`
+	ResCode       string `json:"resCode"`
+	Description   string `json:"description"`
+	Amount        string `json:"amount"`
+	RetrivalRefNo string `json:"retrivalRefNo"`
+	SystemTraceNo string `json:"systemTraceNo"`
+	OrderId       string `json:"orderId"`
 }
 
 func (data *MultiplexingData) IsValidated() bool {
@@ -63,7 +81,7 @@ func (data *MultiplexingData) IsValidated() bool {
 		}
 	}
 
-	switch data.Type.EnumIndex() {
+	switch data.Type {
 	case 0:
 		var sum int64
 		for i := 0; i < len(data.MultiplexingRows); i++ {
@@ -85,34 +103,4 @@ func (data *MultiplexingData) IsValidated() bool {
 	}
 
 	return true
-}
-func (w MultiplexingType) EnumIndex() int {
-	return int(w)
-}
-
-type PurchaseResult struct {
-	OrderId          string           `json:"order_id"`
-	Token            string           `json:"token"`
-	ResCode          string           `json:"res_code"`
-	VerifyResultData VerifyResultData `json:"verify_result_data"`
-}
-
-type PayResultData struct {
-	ResCode     string `json:"res_code"`
-	Token       string `json:"token"`
-	Description string `json:"description"`
-}
-
-type VerifyRequest struct {
-	token    string `json:"token"`
-	SignData string `json:"signData"`
-}
-type VerifyResultData struct {
-	Succeed       bool   `json:"succeed"`
-	ResCode       string `json:"resCode"`
-	Description   string `json:"description"`
-	Amount        string `json:"amount"`
-	RetrivalRefNo string `json:"retrivalRefNo"`
-	SystemTraceNo string `json:"systemTraceNo"`
-	OrderId       string `json:"orderId"`
 }

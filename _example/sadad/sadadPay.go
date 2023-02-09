@@ -6,18 +6,20 @@ import (
 	"github.com/GoFarsi/paygap/client"
 	"github.com/GoFarsi/paygap/providers/sadad"
 	"log"
+	"math/rand"
 )
 
 func main() {
 
 	c := client.New()
-	s, err := sadad.New(c, "9001", 1500, ":)", "back_url", "5888789", "yourPurchasePage",
-		false, nil)
+	s, err := sadad.New(c, "9001", "RecivedMerchenantkey", "returnUrl", "1565879", "purchagePage", false)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//pay
-	resp, err := s.PayRequest(context.Background())
+	//اگر پرداخت به صورت تسهیمی است باید آبجکت مولتی پلکسینگ نیز مقدار دهی شود
+	orderId := string(rand.Int())
+	resp, err := s.PaymentRequest(context.Background(), 50000, orderId, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
