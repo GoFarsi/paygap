@@ -20,27 +20,25 @@ const (
 )
 
 func New(client client.Transporter, terminalId string,
-	merchantKey string, returnUrl string, merchantId string,
-	purchasePage string, enableMultiplexing bool) (*Sadad, error) {
+	merchantKey string, merchantId string,
+) (*Sadad, error) {
 
 	if client == nil {
 		return nil, status.ERR_CLIENT_IS_NIL
 	}
 
 	sadad := &Sadad{
-		Client:             client,
-		TerminalId:         terminalId,
-		MerchantId:         merchantId,
-		ReturnUrl:          returnUrl,
-		EnableMultiplexing: enableMultiplexing,
-		MerchantKey:        merchantKey,
-		PurchasePage:       purchasePage,
+		Client:      client,
+		TerminalId:  terminalId,
+		MerchantId:  merchantId,
+		MerchantKey: merchantKey,
 	}
 
 	return sadad, nil
 }
 
-func (s *Sadad) PaymentRequest(ctx context.Context, amount int64, orderId string, MultiplexinData *MultiplexingData) (*PayResultData, error) {
+func (s *Sadad) PaymentRequest(ctx context.Context, amount int64, orderId string, returnUrl string,
+	enableMultiplexing bool, MultiplexinData *MultiplexingData) (*PayResultData, error) {
 
 	joinedString := fmt.Sprintf("%s;%s;%d", s.TerminalId, orderId, amount)
 	signedDataAsSadadWay, signErr := s.SigningData(joinedString)
@@ -51,18 +49,18 @@ func (s *Sadad) PaymentRequest(ctx context.Context, amount int64, orderId string
 		MerchantId:         s.MerchantId,
 		Amount:             amount,
 		TerminalId:         s.TerminalId,
-		ReturnUrl:          s.ReturnUrl,
+		ReturnUrl:          returnUrl,
 		SignData:           signedDataAsSadadWay,
 		OrderId:            orderId,
 		LocalDateTime:      time.Now(),
-		EnableMultiplexing: s.EnableMultiplexing,
+		EnableMultiplexing: enableMultiplexing,
 		MultiplexingData:   *MultiplexinData,
 	}
 
 	if err := s.Client.GetValidator().Struct(req); err != nil {
 		return nil, status.New(0, http.StatusBadRequest, codes.InvalidArgument, err.Error())
 	}
-	if s.EnableMultiplexing {
+	if enableMultiplexing {
 		if !MultiplexinData.IsValidated() {
 			return nil, status.New(1, http.StatusBadRequest, codes.FailedPrecondition, "خطا در دیتا ورودی برای تسهیم")
 		}

@@ -12,14 +12,14 @@ import (
 func main() {
 
 	c := client.New()
-	s, err := sadad.New(c, "9001", "RecivedMerchenantkey", "returnUrl", "1565879", "purchagePage", false)
+	s, err := sadad.New(c, "9001", "RecivedMerchenantkey", "1565879")
 	if err != nil {
 		log.Fatal(err)
 	}
 	//pay
 	//اگر پرداخت به صورت تسهیمی است باید آبجکت مولتی پلکسینگ نیز مقدار دهی شود
 	orderId := string(rand.Int())
-	resp, err := s.PaymentRequest(context.Background(), 50000, orderId, nil)
+	resp, err := s.PaymentRequest(context.Background(), 50000, orderId, "returnUrl", false, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

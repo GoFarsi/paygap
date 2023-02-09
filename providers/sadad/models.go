@@ -13,13 +13,10 @@ const (
 )
 
 type Sadad struct {
-	Client             client.Transporter
-	TerminalId         string `json:"terminal_id"`
-	MerchantId         string `json:"merchant_id"`
-	ReturnUrl          string `json:"return_url"`
-	EnableMultiplexing bool   `json:"enable_multiplexing"`
-	MerchantKey        string `json:"merchant_key"`
-	PurchasePage       string `json:"purchase_page"`
+	Client      client.Transporter
+	TerminalId  string `json:"terminal_id"`
+	MerchantId  string `json:"merchant_id"`
+	MerchantKey string `json:"merchant_key"`
 }
 type MultiplexingData struct {
 	Type             MultiplexingType       `json:"type"`
