@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/andreburgaud/crypt2go v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
