@@ -19,9 +19,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/GoFarsi/paygap/client"
 	"github.com/GoFarsi/paygap/providers/zarinpal"
-	"log"
 )
 
 func main() {
@@ -52,6 +53,7 @@ func main() {
 - [x] idpay
 - [x] pay.ir
 - [x] payping
+- [x] vandar.io
 - [ ] rayanpay
 - [ ] nextpay
 - [ ] mellat
