@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/andreburgaud/crypt2go v1.1.0
 	github.com/go-playground/validator/v10 v10.11.2
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 	google.golang.org/grpc v1.53.0
 )
