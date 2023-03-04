@@ -6,7 +6,7 @@ require (
 	github.com/andreburgaud/crypt2go v1.2.0
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/stretchr/testify v1.8.2
-	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
+	golang.org/x/time v0.3.0
 	google.golang.org/grpc v1.53.0
 )
 
