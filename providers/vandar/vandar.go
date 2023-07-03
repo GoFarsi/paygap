@@ -12,14 +12,14 @@ import (
 const API_VERSION = "3"
 
 const (
-	VANDAR_HOST = "https://ipg.vandar.io/api"
+	VANDAR_HOST = "https://ipg.vandar.io"
 )
 
 const (
-	VANDAR_REQUEST_API_ENDPOINT             = "/v3/send"
+	VANDAR_REQUEST_API_ENDPOINT             = "/api/v3/send"
 	VANDAR_REDIRECT_API_ENDPOINT            = "/v3/"
-	VANDAR_VERIFY_API_ENDPOINT              = "/v3/verify"
-	VANDAR_TRANSACTION_DETAIL_API_END_POINT = "/v3/transaction"
+	VANDAR_VERIFY_API_ENDPOINT              = "/api/v3/verify"
+	VANDAR_TRANSACTION_DETAIL_API_END_POINT = "/api/v3/transaction"
 )
 
 // New create vandar provider object for user factory request methods

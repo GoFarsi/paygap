@@ -32,7 +32,7 @@ func main() {
 	log.Printf("%+v\n", detailResp)
 
 	//and verify Transction
-	verifyResp, verifyErr := v.TransactionDetail(context.Background(), resp.Token)
+	verifyResp, verifyErr := v.VerifyPayment(context.Background(), resp.Token)
 	if verifyErr != nil {
 		log.Fatal(err)
 	}
