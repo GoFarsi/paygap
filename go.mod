@@ -7,7 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/time v0.3.0
-	google.golang.org/grpc v1.56.1
+	google.golang.org/grpc v1.56.2
 )
 
 require (
