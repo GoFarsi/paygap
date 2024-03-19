@@ -11,7 +11,7 @@ go get -u github.com/GoFarsi/paygap
 
 ## Usage
 
-example for zarinpal provider ([Other examples](_examples))
+example for zarinpal provider ([Other examples](https://github.com/GoFarsi/paygap/tree/main/_example))
 
 ```go
 package main
@@ -60,3 +60,4 @@ func main() {
 - [ ] parsian
 - [ ] pasargad
 - [x] sadad
+- [x] [zibal](https://zibal.ir)
