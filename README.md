@@ -56,7 +56,7 @@ func main() {
 - [x] vandar.io
 - [ ] rayanpay
 - [ ] nextpay
-- [ ] mellat
+- [x] mellat
 - [ ] parsian
 - [ ] pasargad
 - [x] sadad
