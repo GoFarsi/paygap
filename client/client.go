@@ -79,7 +79,7 @@ func (c *Client) Get(ctx context.Context, apiConfig *APIConfig) (*Response, erro
 	if err != nil {
 		return nil, err
 	}
-
+	defer resp.Body.Close()
 	return &Response{resp}, nil
 }
 
