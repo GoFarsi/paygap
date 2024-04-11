@@ -92,6 +92,8 @@ func (pr *PaymentResponse) modifyResponse() error {
 	if len(params) > 0 {
 		if params[0] == "0" {
 			pr.responseCode = -1
+		} else if params[0] == "" {
+			return nil
 		} else {
 			code, err := strconv.Atoi(params[0])
 			if err != nil {
@@ -161,11 +163,13 @@ func (vr *VerifyResponse) modifyResponse() error {
 		vr.responseCode = -1
 		return nil
 	}
-	code, err := strconv.Atoi(vr.Body.BpPay.Return)
-	if err != nil {
-		return err
+	if vr.Body.BpPay.Return != "" {
+		code, err := strconv.Atoi(vr.Body.BpPay.Return)
+		if err != nil {
+			return err
+		}
+		vr.responseCode = code
 	}
-	vr.responseCode = code
 	return nil
 }
 
