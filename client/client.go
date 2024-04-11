@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
-	"golang.org/x/time/rate"
 	"net/http"
 	"net/url"
+
+	"github.com/go-playground/validator/v10"
+	"golang.org/x/time/rate"
 )
 
 var _ Transporter = (*Client)(nil)
@@ -117,7 +118,7 @@ func (c *Client) Post(ctx context.Context, apiConfig *APIConfig, apiRequest any)
 	if err != nil {
 		return nil, err
 	}
-
+	defer resp.Body.Close()
 	return &Response{resp}, nil
 }
 
