@@ -3,11 +3,12 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -45,7 +46,7 @@ func Test_ClientRequest(t *testing.T) {
 		headers := make(map[string]string)
 		headers["foo"] = "bar"
 
-		resp, err := c.Post(ctx, &APIConfig{Host: server.URL}, headers, req)
+		resp, err := c.Post(ctx, &APIConfig{Host: server.URL, Headers: headers}, req)
 
 		assert.Nil(t, err)
 		assert.Nil(t, resp.GetJSON(response))
@@ -82,7 +83,7 @@ func Test_ClientWithRateLimitRequest(t *testing.T) {
 			headers := make(map[string]string)
 			headers["foo"] = "bar"
 
-			resp, err := c.Post(ctx, &APIConfig{Host: server.URL}, headers, req)
+			resp, err := c.Post(ctx, &APIConfig{Host: server.URL, Headers: headers}, req)
 
 			assert.Nil(t, err)
 			assert.Nil(t, resp.GetJSON(response))
