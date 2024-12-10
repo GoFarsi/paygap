@@ -91,7 +91,7 @@ func (pr *PaymentResponse) modifyResponse() error {
 	params := strings.Split(pr.Body.BpPay.Return, ",")
 	if len(params) > 0 {
 		if params[0] == "0" {
-			pr.responseCode = -1
+			pr.responseCode = 0
 		} else {
 			code, err := strconv.Atoi(params[0])
 			if err != nil {
