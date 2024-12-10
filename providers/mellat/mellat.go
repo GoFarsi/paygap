@@ -37,7 +37,7 @@ func (m *Mellat) CreateTransaction(ctx context.Context, req *paymentRequest) (*P
 	if err != nil {
 		return nil, err
 	}
-	return request[*PaymentResponse]("POST", m.url, payload)
+	return request[*PaymentResponse](m.client, http.MethodPost, m.url, payload)
 }
 
 func (m *Mellat) VerifyTransaction(ctx context.Context, req *verifyRequest) (*VerifyResponse, error) {
@@ -45,9 +45,10 @@ func (m *Mellat) VerifyTransaction(ctx context.Context, req *verifyRequest) (*Ve
 	if err != nil {
 		return nil, err
 	}
-	return request[*VerifyResponse]("POST", m.url, payload)
+	return request[*VerifyResponse](m.client, http.MethodPost, m.url, payload)
 }
 func request[Rs response](
+	clientTransporter client.Transporter,
 	method, url string,
 	body []byte,
 ) (
@@ -60,7 +61,7 @@ func request[Rs response](
 	}
 	request.Header.Set("Content-Type", "text/xml")
 	request.Header.Set("charset", "utf-8")
-	resp, err := http.DefaultClient.Do(request)
+	resp, err := clientTransporter.GetClient().Do(request)
 	if err != nil {
 		return response, err
 	}
@@ -73,7 +74,10 @@ func request[Rs response](
 		return response, fmt.Errorf("error raw response: %v", string(responseBody))
 	}
 	if resp.StatusCode != http.StatusOK|http.StatusCreated {
-		return response, status.New(response.ResponseCode(), http.StatusFailedDependency, codes.OK, fmt.Sprintf("response code %v", response.ResponseCode()))
+		return response, status.New(
+			response.ResponseCode(), http.StatusFailedDependency, codes.OK,
+			fmt.Sprintf("response code %v", response.ResponseCode()),
+		)
 	}
 	if err := response.modifyResponse(); err != nil {
 		return response, err
