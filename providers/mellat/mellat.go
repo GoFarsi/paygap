@@ -55,25 +55,32 @@ func request[Rs response](
 	response Rs,
 	err error,
 ) {
+	responsePtr := new(Rs)
+
 	request, err := http.NewRequest(method, url, bytes.NewBuffer(body))
 	if err != nil {
 		return response, err
 	}
 	request.Header.Set("Content-Type", "text/xml")
 	request.Header.Set("charset", "utf-8")
+
 	resp, err := clientTransporter.GetClient().Do(request)
 	if err != nil {
 		return response, err
 	}
 	defer resp.Body.Close()
+
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return response, err
 	}
-	if err := xml.Unmarshal(responseBody, response); err != nil {
+
+	if err := xml.Unmarshal(responseBody, responsePtr); err != nil {
 		return response, fmt.Errorf("error raw response: %v", string(responseBody))
 	}
-	if resp.StatusCode != http.StatusOK|http.StatusCreated {
+
+	response = *responsePtr
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return response, status.New(
 			response.ResponseCode(), http.StatusFailedDependency, codes.OK,
 			fmt.Sprintf("response code %v", response.ResponseCode()),
